@@ -1,0 +1,45 @@
+
+-permitir uso de scripts en Consola 	powershell:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+
+-crear entorno virtual:
+py -m venv venv
+
+
+-activar el entorno virtual:
+.\venv\Scripts\activate
+
+-instalar django:
+pip install django
+
+-version de administrador:
+django-admin --version
+
+-consola:
+cls
+
+-correr proyecto:
+python manage.py runserver
+
+-crear proyecto:
+django-admin startproject djangocrud .
+
+-crear aplicaciones dentro del proyecto:
+python manage.py startapp  nombre
+
+-migrar modelos:
+python manage.py migrate
+
+-crear las tablas nuevas en los modelos:
+  python manage.py makemigrations  
+
+-crear un usuario para la ruta de ADMIN:
+ python manage.py createsuperuser
+
+-contraseña de superusuario ADMIN:
+12345Yuderly
+
+
+
+//////////////////////////////////////////////////////////////////
+

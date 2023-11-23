@@ -1,0 +1,249 @@
+{% extends "base.html" %} 
+{% load static %} 
+{% block content %}
+<body>
+    <br>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 0 150px;">
+        <center><h3 class="display-4">ROLES SENA EMPRESA!</h3></center>
+        <button id="crearRolModalBtn" class="btn btn-light" style="background-color: #4CAF50; color: white;">
+            <i class="fas fa-plus"></i>Crear Rol
+        </button>
+        
+    </div>
+    <hr class="my-4" />
+
+    <!-- Lista de registros -->
+<div class="container">
+    <table class="table" id="listaRoles">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rol in roles %}
+                <tr>
+                    <td>{{ rol.nombre }}</td>
+                    <td>{{ rol.descripcion }}</td>
+                    <td>
+                        <!-- Botón editar -->
+                        <button type="button" class="btn btn-primary editarRolBtn" data-toggle="modal" data-target="#modal-editar-rol{{ rol.id }}" data-id="{{ rol.id }}">Editar</button>
+                        <button class="btn btn-danger eliminarRolBtn" data-id="{{ rol.id }}">Eliminar</button>
+                        <div class="modal fade" id="eliminarRolModal{{ rol.id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarRolModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <!-- Contenido del modal de eliminación -->
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="eliminarRolModalLabel">Eliminar Rol</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Seguro que deseas eliminar este rol?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form id="eliminarRolForm" method="POST" action="{% url 'tasks:eliminar_rol_modal' rol.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal de creación de rol -->
+<div class="modal fade" id="crearRolModal" tabindex="-1" role="dialog" aria-labelledby="crearRolModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="crearRolModalLabel">Crear Nuevo Rol</h5>
+                
+            </div>
+            <div class="modal-body">
+                <!-- Formulario de creación de rol -->
+                <form id="crearRolForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="nombre">Nombre del Rol</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" required></textarea>
+                    </div>
+                    <br>
+                    <center><button type="submit" class="btn btn-primary">Guardar</button> </center>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de editar rol -->
+{% for rol in roles %}
+<div class="modal" id="modal-editar-rol{{ rol.id }}" tabindex="-1" role="dialog" aria-labelledby="modal-editar-rol{{ rol.id }}-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-editar-rol{{ rol.id }}-label">Editar Rol</h5>
+            </div>
+            <form id="editarRolForm{{ rol.id }}" method="post" action="{% url 'tasks:editar_rol_modal' id=rol.id %}">
+            <div class="modal-body">
+                <!-- Tu formulario y campos deben estar aquí -->
+                    {% csrf_token %}
+                    <!-- Campos del formulario -->
+                    <label for="edit-nombre{{ rol.id }}">Nombre del Rol</label>
+                    <input type="text" class="form-control" id="edit-nombre{{ rol.id }}" name="edit_nombre" value="{{ rol.nombre }}" required>
+                
+                    <label for="edit-descripcion{{ rol.id }}">Descripción</label>
+                    <textarea class="form-control" id="edit-descripcion{{ rol.id }}" name="edit_descripcion" rows="3">{{ rol.descripcion }}</textarea>
+                
+                    <!-- Otros campos y botones del formulario -->
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+<script>
+        // Mostrar modal de eliminación de rol
+                $('.eliminarRolBtn').click(function () {
+                    var id = $(this).data('id');
+                    $('#eliminarRolModal' + id).modal('show');
+                });
+                function limpiarFormulario() {
+                document.getElementById("crearRolForm").reset();
+                }
+
+            // Cerrar el modal de creación de rol con JavaScript
+                    function cerrarCrearRolModal() {
+                        $('#crearRolModal').modal('hide');
+                        }
+
+            //modal CREAR 
+                $(document).ready(function () {
+                // Mostrar modal de creación de rol
+                    $('#crearRolModalBtn').click(function () {
+                    $('#crearRolModal').modal('show');
+                });                
+
+        //modal editar SCRIPTS
+            $(document).ready(function() {
+                // Muestra el modal al hacer clic en el botón "Editar"
+                        $('.editarRolBtn').click(function() {
+                            var id = $(this).data('id');       
+                            // Abre el modal directamente
+                            $('#modal-editar-rol' + id).modal('show');        
+                            // Llama a la función para obtener y mostrar los datos del rol
+                            getRolData(id);
+                        });       
+                        function getRolData(id) {
+                            console.log('Obteniendo datos del rol con ID:', id);              
+                            // Utiliza AJAX para obtener los datos del servidor
+                            $.ajax({
+                                url: '/roles/editar_modal/' + id + '/',
+                                type: 'GET',
+                                success: function(data) {
+                                    // Verifica los datos devueltos por el servidor
+                                    console.log('Datos del servidor:', data);               
+                                    // Asigna los datos al formulario
+                                    $('#edit-nombre' + id).val(data.nombre);
+                                    $('#edit-descripcion' + id).val(data.descripcion);               
+                                    // Actualiza la acción del formulario para apuntar a la URL correcta
+                                    $('#editarRolForm' + id).attr('action', '/roles/editar_modal/' + id + '/');
+                                },
+                                error: function(error) {
+                                    console.error('Error al obtener datos del servidor:', error);
+                                }
+                            });
+                        }                
+                        // Actualizar datos al hacer clic en "Guardar Cambios"
+                        $('#editarRolForm').submit(function(e) {
+                            e.preventDefault();       
+                            // Utiliza AJAX para enviar el formulario actualizado
+                            $.ajax({
+                                url: $(this).attr('action'),
+                                type: 'POST',
+                                data: $(this).serialize(),
+                                success: function(response) {
+                                    console.log('Respuesta del servidor:', response);
+                                    // Cierra el modal después de actualizar los datos
+                                    $('#modal-editar-rol' + id).modal('hide');
+                                },
+                                error: function(error) {
+                                    console.error('Error al enviar el formulario:', error);
+                                }
+                            });
+                        });
+                    });
+
+        // Enviar formulario de creación de rol a través de Ajax
+        $('#crearRolForm').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '/roles/crear_modal/',
+                data: $(this).serialize(),
+                success: function (data) {
+                    if (data.success) {
+                        $('#crearRolModal').modal('hide');
+                        limpiarFormulario();  // Limpia el formulario
+                        // Actualizar la lista de roles en la vista
+                        $('#listaRoles tbody').empty();
+                        data.roles.forEach(function (rol) {
+                            $('#listaRoles tbody').append('<tr><td>' + rol.nombre + '</td><td>' + rol.descripcion + '</td><td><button class="btn btn-info editarRolBtn" data-id="' + rol.id + '">Editar</button> <button class="btn btn-danger eliminarRolBtn" data-id="' + rol.id + '">Eliminar</button></td></tr>');
+                        });
+                    }
+                }
+            });
+        });
+
+        //Eliminar un rol a través de Ajax
+        $('.eliminarRolForm').submit(function (e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '/roles/eliminar_modal/' + id + '/',
+                success: function (data) {
+                    if (data.success) {
+                        $('#eliminarRolModal' + id).modal('hide');
+                        
+                        // Redirigir al usuario a la vista de roles
+                        window.location.href="{% url 'tasks:rol' %}";
+                        
+                    }
+                }
+            });
+        });
+
+        // Función para actualizar la lista de roles en la vista
+                function actualizarListaRoles(roles) {
+                    $('#listaRoles tbody').empty();
+                    roles.forEach(function (rol) {
+                        $('#listaRoles tbody').append('<tr><td>' + rol.nombre + '</td><td>' + rol.descripcion + '</td><td><button class="btn btn-info editarRolBtn" data-id="' + rol.id + '">Editar</button> <button class="btn btn-danger eliminarRolBtn" data-id="' + rol.id + '">Eliminar</button></td></tr>');
+                    });
+                }
+            });
+</script>
+
+
+
+{% endblock %}
