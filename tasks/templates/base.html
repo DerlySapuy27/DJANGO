@@ -32,7 +32,7 @@
                             Sena Empresa
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'tasks:senaempresa' %}">Lista Sena Empresa</a></li>
+                            <li><a class="dropdown-item" href="{% url 'tasks:senaempresa' %}">Sena Empresa</a></li>
                             <li><a class="dropdown-item" href="{% url 'tasks:rol' %}">Roles</a></li>
                             <li><a class="dropdown-item" href="{% url 'tasks:create_task' %}"></a></li>
                         </ul>
@@ -43,7 +43,16 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'tasks:tasks' %}">Lista Aprendices</a></li>
-                            <li><a class="dropdown-item" href="{% url 'tasks:create_task' %}">Registrar</a></li>
+                            <li><a class="dropdown-item" href="{% url 'tasks:estudiante' %}">Registrar</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Instructor
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'tasks:tasks' %}">Lista Instructor</a></li>
+                            <li><a class="dropdown-item" href="{% url 'tasks:instructor' %}">Registrar</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -51,7 +60,7 @@
                             Certificados
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'tasks:tasks' %}">Generar</a></li>
+                            <li><a class="dropdown-item" href="{% url 'tasks:certificado' %}">Generar</a></li>
                             </ul>
                     </li>
                     <li class="nav-item dropdown">

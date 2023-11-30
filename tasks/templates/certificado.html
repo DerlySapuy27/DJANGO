@@ -1,0 +1,33 @@
+{% extends "base.html" %} 
+
+{% block content %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificado</title>
+</head>
+<body>
+    <p>SENA Empresa "{{ sena_empresa }}"</p>
+
+    <p>CERTIFICA</p>
+
+    <p>Que {{ aprendiz_nombre }}, identificada con Cedula de Ciudadanía No {{ aprendiz_identificacion }}...</p>
+
+    <p>Descripción de funciones campo aprendiz:</p>
+    <p>{{ funciones_aprendiz }}</p>
+
+    <p>La anterior certificación se expide a petición del interesado (a), en Campoalegre, a los {{ fecha_certificacion }}.</p>
+
+    <p>LOLA FERNANDA HERRERA HERNÁNDEZ</p>
+    <p>Instructor SENA</p>
+    <p>Líder Estrategia SENA Empresa</p>
+    <p>C.C. {{ instructor_identificacion }} de Bogotá Cel. {{ instructor_celular }}</p>
+</body>
+</html>
+
+{% endblock %}

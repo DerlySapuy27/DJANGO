@@ -1,0 +1,221 @@
+{% extends "base.html" %} 
+
+{% block content %}
+<body>
+    <br>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 0 150px;">
+        <center><h3 class="display-4">Instructor Lider SENA EMPRESA!</h3></center>
+        <button id="crearInstructorModalBtn" class="btn btn-light" style="background-color: #4CAF50; color: white;">
+            <i class="fas fa-plus"></i>Agregar Instructor
+        </button>
+        
+    </div>
+    <hr class="my-4" />
+
+    <!-- Lista de registros de Instructores -->
+<div class="container" id="listaInstructoresContainer">
+    <table class="table" id="listaInstructores">
+        <thead>
+            <tr>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Ocupación</th>
+                <th>Cargo</th>
+                <th># Documento</th>
+                <th>Teléfono</th>
+                <th>Firma</th>
+                <!-- Agrega más columnas según sea necesario -->
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for instructor in instructores %}
+                <tr>
+                    <td>{{ instructor.nombres }}</td>
+                    <td>{{ instructor.apellidos }}</td>
+                    <td>{{ instructor.ocupacion }}</td>
+                    <td>{{ instructor.cargo }}</td>
+                    <td>{{ instructor.numero_documento }}</td>
+                    <td>{{ instructor.telefono }}</td>
+                    <td>{{ instructor.firma }}</td>
+                    <!-- Agrega más columnas según sea necesario -->
+                    <td>
+                        <!-- Botones editar y eliminar sin espacio entre ellos -->
+                        <button type="button" class="btn btn-primary editarInstructorBtn" data-toggle="modal" data-target="#modal-editar-instructor{{ instructor.id }}" data-id="{{ instructor.id }}">Editar</button>
+                        <button class="btn btn-danger eliminarInstructorBtn" data-id="{{ instructor.id }}" data-toggle="modal" data-target="#eliminarInstructorModal{{ instructor.id }}">Eliminar</button>
+                        <!-- Modal de eliminación -->
+                        <div class="modal fade" id="eliminarInstructorModal{{ instructor.id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarInstructorModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <!-- Contenido del modal de eliminación -->
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="eliminarInstructorModalLabel">Eliminar Instructor</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Seguro que deseas eliminar al Instructor '{{ instructor.nombres }} {{ instructor.apellidos }}'?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form id="eliminarInstructorForm" method="POST" action="{% url 'tasks:eliminar_instructor_modal' instructor.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </td>
+                </tr>
+            {% endfor %} 
+        </tbody>
+    </table>
+</div>
+
+
+
+    <!-- Modal de creación de instructor -->
+<div class="modal fade" id="crearInstructorModal" tabindex="-1" role="dialog" aria-labelledby="crearInstructorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="crearInstructorModalLabel">Crear Nuevo Instructor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario de creación de instructor -->
+                <form id="crearInstructorForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="nombres" class="form-label">Nombres</label>
+                                <input type="text" class="form-control" id="nombres" name="nombres" placeholder="Ingrese Nombres" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="apellidos" class="form-label">Apellidos</label>
+                                <input type="text" class="form-control" id="apellidos" name="apellidos" placeholder="Ingrese Apellidos" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ocupacion" class="form-label">Ocupación</label>
+                                <input type="text" class="form-control" id="ocupacion" name="ocupacion" placeholder="Ingrese Ocupación" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cargo" class="form-label">Cargo</label>
+                                <input type="text" class="form-control" id="cargo" name="cargo" placeholder="Ingrese Cargo" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tipo_documento" class="form-label">Tipo de Documento</label>
+                                <select class="form-control" id="tipo_documento" name="tipo_documento" required>
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="TI">Tarjeta de Identidad</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="numero_documento" class="form-label">Número de Documento</label>
+                                <input type="number" class="form-control" id="numero_documento" name="numero_documento" placeholder="Ingrese Número Documento" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fecha_expedicion" class="form-label">Fecha de Expedición</label>
+                                <input type="date" class="form-control" id="fecha_expedicion" name="fecha_expedicion" placeholder="Seleccione Fecha Expedición Documento" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lugar_expedicion" class="form-label">Lugar de Expedición</label>
+                                <input type="text" class="form-control" id="lugar_expedicion" name="lugar_expedicion" placeholder="Ingrese Lugar de Expedición del Documento" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="Ingrese Teléfono">
+                            </div>
+                            <div class="mb-3">
+                                <label for="firma" class="form-label">Firma</label>
+                                <input type="file" class="form-control" id="firma" name="firma" accept="image/*">
+                            </div>
+                            <!-- Agrega más campos según tu modelo Instructor -->
+                            <!-- ... -->
+                        </div>
+                    </div>
+                    <br>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    // Abrir modal crear instructor
+    $(document).ready(function () {
+        // Mostrar modal de creación de aprendiz
+        $('#crearInstructorModalBtn').click(function () {
+            $('#crearInstructorModal').modal('show');
+        });
+    });
+
+    // Enviar formulario de creación de instructor a través de Ajax
+    $('#crearInstructorForm').submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '/instructor/crear_modal/',
+            data: $(this).serialize(),
+            success: function (data) {
+                if (data.success) {
+                    $('#crearInstructorModal').modal('hide');
+
+                    // Recargar la vista instructor.html
+                    window.location.href = '/instructor/';
+                    limpiarFormulario();  // Limpia el formulario
+                    // Actualizar la lista de instructores en la vista
+                    $('#listaInstructores tbody').empty();
+                    data.instructores.forEach(function (instructor) {
+                        // Agregar filas a la tabla
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log('Error al enviar el formulario:', error);
+                console.log('Respuesta del servidor:', xhr.responseText);
+            }
+        });
+    });
+
+
+
+
+
+        // Mostrar modal de eliminación de instructor
+        $('.eliminarInstructorBtn').click(function () {
+            var id = $(this).data('id');
+            $('#eliminarInstructorModal' + id).modal('show');
+        });
+
+        // Eliminar un instructor a través de Ajax
+        $('.eliminarInstructorForm').submit(function (e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            $.ajax({
+                type: 'POST',
+                url: '/instructor/eliminar_modal/' + id + '/',
+                success: function (data) {
+                    if (data.success) {
+                        $('#eliminarInstructorModal' + id).modal('hide');
+                        
+                        // Redirigir al usuario a la vista de instructores
+                        window.location.href = "{% url 'tasks:instructor' %}";
+                    }
+                }
+            });
+        });
+
+</script>
+
+{% endblock %}

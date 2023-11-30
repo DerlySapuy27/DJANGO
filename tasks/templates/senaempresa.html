@@ -15,7 +15,7 @@
 
 
 <!-- Lista de Sena Empresas -->
-<div class="container">
+<div class="container" id="listaSenaEmpresasContainer">
     <table class="table" id="listaSenaEmpresas">
         <thead>
             <tr>
@@ -34,36 +34,39 @@
                     <td>{{ sena_empresa.fecha_inicio }}</td>
                     <td>{{ sena_empresa.fecha_fin }}</td>
                     <td>
-                        <!-- Botón editar -->
+                        <!-- Botones editar y eliminar con espacio entre ellos -->
                         <button type="button" class="btn btn-primary editarSenaEmpresaBtn" data-toggle="modal" data-target="#modal-editar-sena-empresa{{ sena_empresa.id }}" data-id="{{ sena_empresa.id }}">Editar</button>
-                        <button class="btn btn-danger eliminarSenaEmpresaBtn" data-id="{{ sena_empresa.id }}">Eliminar</button>
-                        <!-- Agrega esta sección donde corresponda en tu HTML -->
-                                <div class="modal fade" id="eliminarSenaEmpresaModal{{ sena_empresa.id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarSenaEmpresaModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <!-- Contenido del modal de eliminación -->
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="eliminarSenaEmpresaModalLabel">Eliminar Sena Empresa</h5>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>¿Seguro que deseas eliminar esta empresa?</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <form id="eliminarSenaEmpresaForm" method="POST" action="{% url 'tasks:eliminar_sena_empresa_modal' sena_empresa.id %}">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                </form>
-                                            </div>
-                                        </div>
+                        <button class="btn btn-danger ml-2 eliminarSenaEmpresaBtn" data-id="{{ sena_empresa.id }}" data-toggle="modal" data-target="#eliminarSenaEmpresaModal{{ sena_empresa.id }}">Eliminar</button>
+                        
+                        <!-- Modal de eliminación -->
+                        <div class="modal fade" id="eliminarSenaEmpresaModal{{ sena_empresa.id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarSenaEmpresaModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <!-- Contenido del modal de eliminación -->
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="eliminarSenaEmpresaModalLabel">Eliminar Sena Empresa</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Seguro que deseas eliminar la empresa '{{ sena_empresa.nombre }}'?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form id="eliminarSenaEmpresaForm" method="POST" action="{% url 'tasks:eliminar_sena_empresa_modal' sena_empresa.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        </form>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+
 
 
 
@@ -145,23 +148,23 @@
 
 
 <script>
-                // Mostrar modal de eliminación de Sena Empresa
+        // Mostrar modal de eliminación de Sena Empresa
             $(document).on('click', '.eliminarSenaEmpresaBtn', function () {
                 var id = $(this).data('id');
                 $('#eliminarSenaEmpresaModal' + id).modal('show');
             });
 
-            // Cerrar el modal de creación de Sena Empresa con JavaScript
+        // Cerrar el modal de creación de Sena Empresa con JavaScript
             function cerrarCrearSenaEmpresaModal() {
                 $('#crearSenaEmpresaModal').modal('hide');
             }
 
-            // Mostrar modal de creación de Sena Empresa
+        // Mostrar modal de creación de Sena Empresa
             $('#crearSenaempresaModalBtn').click(function () {
                 $('#crearSenaEmpresaModal').modal('show');
             });
 
-            // Enviar formulario de creación de Sena Empresa a través de Ajax
+        // Enviar formulario de creación de Sena Empresa a través de Ajax
             $(document).on('submit', '#crearSenaEmpresaForm', function (e) {
                 e.preventDefault();
                 $.ajax({
@@ -172,125 +175,120 @@
                         console.log('Respuesta del servidor:', data);
 
                         if (data && data.success) {
+                            // Cerrar el modal de creación de Sena Empresa
                             $('#crearSenaEmpresaModal').modal('hide');
-                            limpiarFormulario();
 
-                            if (data.senas_empresas) {
-                                actualizarListaSenaEmpresas(data.senas_empresas);
-                            } else {
-                                console.error('Error: La propiedad "senas_empresas" no está presente en la respuesta del servidor.');
-                            }
+                            
                         } else {
                             console.error('Error en la respuesta del servidor:', data && data.message);
                         }
                     },
-
                     error: function (error) {
                         console.error('Error al enviar la solicitud AJAX:', error.responseText);
                     }
                 });
             });
 
-                    // Enviar solicitud para eliminar una Sena Empresa a través de Ajax
-                    $(document).on('submit', '.eliminarSenaEmpresaForm', function (e) {
-                        e.preventDefault(); 
-                        var id = $(this).data('id');
-                        console.log('ID a eliminar:', id);
-                        $.ajax({
-                            type: 'POST',
-                            url: '/sena_empresas/eliminar_modal/' + id + '/',
-                            success: function (data) {
-                                if (data.success) {
-                                    $('#eliminarSenaEmpresaModal' + id).modal('hide');
-                                    // Redirigir al usuario a la vista de Sena Empresas
-                                    window.location.href = "{% url 'tasks:senaempresa' %}";
-                                }
-                            },
-                            error: function (error) {
-                                console.error('Error al enviar la solicitud AJAX para eliminar:', error.responseText);
-                            }
-                        });
-                    });
 
-                        // Modal editar SCRIPTS
-                        $(document).ready(function() {
-                            $('.editarSenaEmpresaBtn').click(function() {
-                                var id = $(this).data('id');
-                                // Abre el modal directamente
-                                $('#modal-editar-sena-empresa' + id).modal('show');
-                                // Llama a la función para obtener y mostrar los datos del SenaEmpresa
-                                getSenaEmpresaData(id);
-                            });
+///////// MODAL ELIMINAR/////////////
+            $(document).on('submit', '.eliminarSenaEmpresaForm', function (e) {
+                e.preventDefault(); 
+                var id = $(this).data('id');
+                console.log('ID a eliminar:', id);
+                $.ajax({
+                    type: 'POST',
+                    url: '/sena_empresas/eliminar_modal/' + id + '/',
+                    success: function (data) {
+                        if (data.success) {
+                            $('#eliminarSenaEmpresaModal' + id).modal('hide');
+                            // Redirigir al usuario a la vista de Sena Empresas
+                            window.location.href = "{% url 'tasks:senaempresa' %}";
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error al enviar la solicitud AJAX para eliminar:', error.responseText);
+                    }
+                });
+            });
+///////// FIN MODAL ELIMINAR/////////////            
 
-                            // Función para abrir el modal y obtener los datos del servidor
-                            function abrirModalEditar(id, urlPrefix) {
-                                console.log('Obteniendo datos con ID:', id);
-                                // Utiliza AJAX para obtener los datos del servidor
-                                $.ajax({
-                                    url: urlPrefix + id + '/',
-                                    type: 'GET',
-                                    success: function(data) {
-                                        // Verifica los datos devueltos por el servidor
-                                        console.log('Datos del servidor:', data);
-                                        // Asigna los datos al formulario
-                                        $('#edit-nombre' + id).val(data.nombre);
-                                        $('#edit-ubicacion' + id).val(data.ubicacion);
-                                        $('#edit-fecha-inicio' + id).val(data.fecha_inicio);
-                                        $('#edit-fecha-fin' + id).val(data.fecha_fin);
-                                        // Actualiza la acción del formulario para apuntar a la URL correcta
-                                        $('#editarSenaEmpresaForm' + id).attr('action', urlPrefix + id + '/');
-                                    },
-                                    error: function(error) {
-                                        console.error('Error al obtener datos del servidor:', error);
-                                    }
-                                });
-                            }
-                            // Botón editar Sena Empresa
-                            $('.editarSenaEmpresaBtn').click(function() {
-                                var id = $(this).data('id');
-                                // Abre el modal y obtiene los datos del servidor
-                                abrirModalEditar(id, '/sena_empresas/editar_modal/');
-                            });
+/////////INICIO MODAL EDITAR/////////////7
+            $(document).ready(function() {
+                $('.editarSenaEmpresaBtn').click(function() {
+                    var id = $(this).data('id');
+                    // Abre el modal directamente
+                    $('#modal-editar-sena-empresa' + id).modal('show');
+                    // Llama a la función para obtener y mostrar los datos del SenaEmpresa
+                    getSenaEmpresaData(id);
+                });
+        // Función para abrir el modal y obtener los datos del servidor
+            function abrirModalEditar(id, urlPrefix) {
+                console.log('Obteniendo datos con ID:', id);
+                // Utiliza AJAX para obtener los datos del servidor
+                $.ajax({
+                    url: urlPrefix + id + '/',
+                    type: 'GET',
+                    success: function(data) {
+                        // Verifica los datos devueltos por el servidor
+                        console.log('Datos del servidor:', data);
+                        // Asigna los datos al formulario
+                        $('#edit-nombre' + id).val(data.nombre);
+                        $('#edit-ubicacion' + id).val(data.ubicacion);
+                        $('#edit-fecha-inicio' + id).val(data.fecha_inicio);
+                        $('#edit-fecha-fin' + id).val(data.fecha_fin);
+                        // Actualiza la acción del formulario para apuntar a la URL correcta
+                        $('#editarSenaEmpresaForm' + id).attr('action', urlPrefix + id + '/');
+                    },
+                    error: function(error) {
+                        console.error('Error al obtener datos del servidor:', error);
+                    }
+                });
+            }
+        // Botón editar Sena Empresa
+            $('.editarSenaEmpresaBtn').click(function() {
+                var id = $(this).data('id');
+                // Abre el modal y obtiene los datos del servidor
+                abrirModalEditar(id, '/sena_empresas/editar_modal/');
+            });
 
-                            // Función para actualizar datos al hacer clic en "Guardar Cambios"
-                            $('.editarSenaEmpresaForm').submit(function(e) {
-                                e.preventDefault();
-                                var id = $(this).data('id');
-                                // Obtén los datos del formulario
-                                var formData = {
-                                    'edit_nombre': $('#edit-nombre' + id).val(),
-                                    'edit_ubicacion': $('#edit-ubicacion' + id).val(),
-                                    'edit_fecha_inicio': $('#edit-fecha-inicio' + id).val(),
-                                    'edit_fecha_fin': $('#edit-fecha-fin' + id).val(),
-                                    // Otros campos del formulario si los hay
-                                };
+        // Función para actualizar datos al hacer clic en "Guardar Cambios"
+            $('.editarSenaEmpresaForm').submit(function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                // Obtén los datos del formulario
+                var formData = {
+                    'edit_nombre': $('#edit-nombre' + id).val(),
+                    'edit_ubicacion': $('#edit-ubicacion' + id).val(),
+                    'edit_fecha_inicio': $('#edit-fecha-inicio' + id).val(),
+                    'edit_fecha_fin': $('#edit-fecha-fin' + id).val(),
+                    // Otros campos del formulario si los hay
+                };
 
-                                // Verifica si todos los campos requeridos tienen datos
-                                var camposVacios = Object.values(formData).some(value => !value);
+                // Verifica si todos los campos requeridos tienen datos
+                var camposVacios = Object.values(formData).some(value => !value);
 
-                                if (camposVacios) {
-                                    console.error('Por favor, completa todos los campos requeridos.');
-                                    return;
-                                }
+                if (camposVacios) {
+                    console.error('Por favor, completa todos los campos requeridos.');
+                    return;
+                }
 
-                                // Utiliza AJAX para enviar el formulario actualizado
-                                $.ajax({
-                                    url: $(this).attr('action'),
-                                    type: 'POST',
-                                    data: formData,
-                                    success: function(response) {
-                                        console.log('Respuesta del servidor:', response);
-                                        // Cierra el modal después de actualizar los datos
-                                        $('#modal-editar-sena-empresa' + id).modal('hide');
-                                    },
-                                    error: function(error) {
-                                        console.error('Error al enviar el formulario:', error);
-                                    }
-                                });
-                            });
-                        });
-
-//fin modal editar
+        // Utiliza AJAX para enviar el formulario actualizado
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    console.log('Respuesta del servidor:', response);
+                    // Cierra el modal después de actualizar los datos
+                    $('#modal-editar-sena-empresa' + id).modal('hide');
+                },
+                error: function(error) {
+                    console.error('Error al enviar el formulario:', error);
+                }
+            });
+        });
+    });
+/////////FIN MODAL EDITAR///////////// 
 
             function limpiarFormulario() {
                 document.getElementById("crearSenaEmpresaForm").reset();
